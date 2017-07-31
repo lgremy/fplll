@@ -72,6 +72,8 @@ template <class ZT> int test_bkz_param(ZZ_mat<ZT> &A, const int block_size, int 
 {
 
   int status = 0;
+  // U is not empty.
+  IntMatrix U = IntMatrix(A.get_rows(), A.get_rows());
 
   vector<Strategy> strategies;
   for (long b = 0; b <= block_size; b++)
@@ -95,7 +97,7 @@ template <class ZT> int test_bkz_param(ZZ_mat<ZT> &A, const int block_size, int 
   BKZParam params(block_size, strategies);
   params.flags = flags;
   // zero on success
-  status = bkz_reduction(&A, NULL, params, FT_DEFAULT, 53);
+  status = bkz_reduction(&A, &U, params, FT_DEFAULT, 53);
   if (status != RED_SUCCESS)
   {
     cerr << "BKZ parameter test failed with error '" << get_red_status_str(status) << "'" << endl;
@@ -238,8 +240,9 @@ int main(int /*argc*/, char ** /*argv*/)
 
   status |= test_linear_dep();
   status |= test_filename<mpz_t>("lattices/dim55_in", 10, FT_DEFAULT, BKZ_DEFAULT | BKZ_AUTO_ABORT);
-#ifdef FPLLL_HAVE_QD
+#ifdef FPLLL_WITH_QD
   status |= test_filename<mpz_t>("lattices/dim55_in", 10, FT_DD, BKZ_SD_VARIANT | BKZ_AUTO_ABORT);
+  status |= test_filename<mpz_t>("lattices/dim55_in", 10, FT_QD, BKZ_SD_VARIANT | BKZ_AUTO_ABORT);
 #endif
   status |= test_filename<mpz_t>("lattices/dim55_in", 10, FT_DEFAULT, BKZ_SLD_RED);
   status |=
@@ -251,6 +254,9 @@ int main(int /*argc*/, char ** /*argv*/)
   status |= test_int_rel<mpz_t>(50, 1000, 10, FT_DOUBLE, BKZ_DEFAULT | BKZ_AUTO_ABORT);
   status |= test_int_rel<mpz_t>(50, 1000, 10, FT_DOUBLE, BKZ_SD_VARIANT | BKZ_AUTO_ABORT);
   status |= test_int_rel<mpz_t>(50, 1000, 10, FT_DOUBLE, BKZ_SLD_RED);
+  status |= test_int_rel<mpz_t>(50, 1000, 10, FT_LONG_DOUBLE, BKZ_DEFAULT | BKZ_AUTO_ABORT);
+  status |= test_int_rel<mpz_t>(50, 1000, 10, FT_LONG_DOUBLE, BKZ_SD_VARIANT | BKZ_AUTO_ABORT);
+  status |= test_int_rel<mpz_t>(50, 1000, 10, FT_LONG_DOUBLE, BKZ_SLD_RED);
   status |= test_int_rel<mpz_t>(50, 1000, 15, FT_MPFR, BKZ_DEFAULT | BKZ_AUTO_ABORT, 100);
   status |= test_int_rel<mpz_t>(50, 1000, 15, FT_MPFR, BKZ_SD_VARIANT | BKZ_AUTO_ABORT, 100);
   status |= test_int_rel<mpz_t>(50, 1000, 15, FT_MPFR, BKZ_SLD_RED, 100);
@@ -276,6 +282,11 @@ int main(int /*argc*/, char ** /*argv*/)
   status |= test_filename<mpz_t>("lattices/example_in", 10, FT_DOUBLE);
   status |= test_filename<mpz_t>("lattices/example_in", 10, FT_DOUBLE, BKZ_SD_VARIANT);
   status |= test_filename<mpz_t>("lattices/example_in", 10, FT_DOUBLE, BKZ_SLD_RED);
+
+  status |= test_filename<mpz_t>("lattices/dim55_in", 10, FT_DEFAULT,
+                                 BKZ_DEFAULT | BKZ_AUTO_ABORT | BKZ_NO_LLL);
+
+  status |= test_int_rel<mpz_t>(50, 1000, 31, FT_MPFR, BKZ_SLD_RED | BKZ_GH_BND, 100);
 
   if (status == 0)
   {
