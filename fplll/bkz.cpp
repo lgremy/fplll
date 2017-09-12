@@ -534,7 +534,12 @@ template <class ZT, class FT> bool BKZReduction<ZT, FT>::bkz()
   }
 
   if (param.block_size < 2)
-    return set_status(RED_SUCCESS);
+  {
+    if (!(flags & BKZ_NO_LLL))
+      return set_status(RED_SUCCESS);
+    else
+      return set_status(RED_BKZ_FAILURE);
+  }
 
   int i = 0;
 
