@@ -73,6 +73,8 @@ int test_bkz_param(ZZ_mat<ZT> &A, const int block_size, int flags = BKZ_DEFAULT,
   int status = 0;
   // U is not empty.
   ZZ_mat<ZT> U = ZZ_mat<ZT>(A.get_rows(), A.get_rows());
+  ZZ_mat<ZT> B = ZZ_mat<ZT>(A.get_rows(), A.get_cols());
+  B            = A;
 
   vector<Strategy> strategies;
   for (long b = 0; b <= block_size; b++)
@@ -102,6 +104,7 @@ int test_bkz_param(ZZ_mat<ZT> &A, const int block_size, int flags = BKZ_DEFAULT,
   {
     cerr << "BKZ parameter test failed with error '" << get_red_status_str(status) << "'" << endl;
   }
+  // TODO: test if A * U = B (or U * A = B)
   return status;
 }
 
