@@ -386,6 +386,12 @@ int main(int /*argc*/, char ** /*argv*/)
 
   status |= test_int_rel<mpz_t>(50, 1000, 31, FT_MPFR, BKZ_SLD_RED | BKZ_GH_BND, 100);
 
+  status |= test_filename<mpz_t>("lattices/dim55_in", 1, FT_DEFAULT, BKZ_DEFAULT | BKZ_AUTO_ABORT);
+  // This test must fail.
+  cerr << "# The following fail is expected." << endl;
+  status |= !test_filename<mpz_t>("lattices/dim55_in", 1, FT_DEFAULT,
+                                  BKZ_DEFAULT | BKZ_AUTO_ABORT | BKZ_NO_LLL);
+
   if (status == 0)
   {
     cerr << "All tests passed." << endl;
