@@ -72,7 +72,7 @@ int test_bkz_param(ZZ_mat<ZT> &A, const int block_size, int flags = BKZ_DEFAULT,
 
   int status = 0;
   // U is not empty.
-  IntMatrix U = IntMatrix(A.get_rows(), A.get_rows());
+  ZZ_mat<ZT> U = ZZ_mat<ZT>(A.get_rows(), A.get_rows());
 
   vector<Strategy> strategies;
   for (long b = 0; b <= block_size; b++)
@@ -325,11 +325,13 @@ int main(int /*argc*/, char ** /*argv*/)
   int status = 0;
 
   status |= test_linear_dep();
-  status |= test_filename<mpz_t>("lattices/dim55_in", 10, FT_DEFAULT, BKZ_DEFAULT | BKZ_AUTO_ABORT);
+  status |= test_filename<mpz_t>(TESTDATADIR "lattices/dim55_in", 10, FT_DEFAULT,
+                                 BKZ_DEFAULT | BKZ_AUTO_ABORT);
 #ifdef FPLLL_WITH_QD
-  status |= test_filename<mpz_t>("lattices/dim55_in", 10, FT_DD, BKZ_SD_VARIANT | BKZ_AUTO_ABORT);
-  status |= test_filename<mpz_t>("lattices/dim55_in", 10, FT_QD, BKZ_SD_VARIANT | BKZ_AUTO_ABORT);
+  status |= test_filename<mpz_t>(TESTDATADIR "lattices/dim55_in", 10, FT_DD,
+                                 BKZ_SD_VARIANT | BKZ_AUTO_ABORT);
 #endif
+
   status |=
       test_filename<mpz_t>(TESTDATADIR "/tests/lattices/dim55_in", 10, FT_DEFAULT, BKZ_SLD_RED);
   status |= test_filename<mpz_t>(TESTDATADIR "/tests/lattices/dim55_in", 20, FT_MPFR,
