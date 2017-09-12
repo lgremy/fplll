@@ -18,7 +18,7 @@ template <class F> class Z_NR;
  * types (double, dpe_t and mpfr_t). For all functions, the rounding
  * mode rnd is ignored unless F=mpfr_t.
  */
-template <class F> class FP_NR
+template <class F = mpfr_t> class FP_NR
 {
 
   F data;
@@ -40,7 +40,7 @@ public:
 
   /**
    * Sets the precision of new FP_NR&lt;F&gt; objects. Returns the
-   # previous value. This has no effect is F != mpfr_t.
+     previous value. This has no effect is F != mpfr_t.
    */
   static inline unsigned int set_prec(unsigned int prec);
 
