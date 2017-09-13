@@ -328,10 +328,10 @@ int main(int /*argc*/, char ** /*argv*/)
   int status = 0;
 
   status |= test_linear_dep();
-  status |= test_filename<mpz_t>(TESTDATADIR "lattices/dim55_in", 10, FT_DEFAULT,
+  status |= test_filename<mpz_t>(TESTDATADIR "/tests/lattices/dim55_in", 10, FT_DEFAULT,
                                  BKZ_DEFAULT | BKZ_AUTO_ABORT);
 #ifdef FPLLL_WITH_QD
-  status |= test_filename<mpz_t>(TESTDATADIR "lattices/dim55_in", 10, FT_DD,
+  status |= test_filename<mpz_t>(TESTDATADIR "/tests/lattices/dim55_in", 10, FT_DD,
                                  BKZ_SD_VARIANT | BKZ_AUTO_ABORT);
 #endif
 
@@ -386,15 +386,16 @@ int main(int /*argc*/, char ** /*argv*/)
   // Test BKZ_DUMP_GSO
   status |= test_int_rel_bkz_dump_gso<mpz_t>(50, 1000, 15, FT_MPFR, BKZ_DEFAULT | BKZ_DUMP_GSO);
 
-  status |= test_filename<mpz_t>("lattices/dim55_in", 10, FT_DEFAULT,
+  status |= test_filename<mpz_t>(TESTDATADIR "/tests/lattices/dim55_in", 10, FT_DEFAULT,
                                  BKZ_DEFAULT | BKZ_AUTO_ABORT | BKZ_NO_LLL);
 
   status |= test_int_rel<mpz_t>(50, 1000, 31, FT_MPFR, BKZ_SLD_RED | BKZ_GH_BND, 100);
 
-  status |= test_filename<mpz_t>("lattices/dim55_in", 1, FT_DEFAULT, BKZ_DEFAULT | BKZ_AUTO_ABORT);
+  status |= test_filename<mpz_t>(TESTDATADIR "/tests/lattices/dim55_in", 1, FT_DEFAULT,
+                                 BKZ_DEFAULT | BKZ_AUTO_ABORT);
   // This test must fail.
   cerr << "# The following fail is expected." << endl;
-  status |= !test_filename<mpz_t>("lattices/dim55_in", 1, FT_DEFAULT,
+  status |= !test_filename<mpz_t>(TESTDATADIR "/tests/lattices/dim55_in", 1, FT_DEFAULT,
                                   BKZ_DEFAULT | BKZ_AUTO_ABORT | BKZ_NO_LLL);
 
   if (status == 0)
