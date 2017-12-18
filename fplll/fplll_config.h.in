@@ -22,6 +22,10 @@
 /* fplll version info */
 #define FPLLL_VERSION_INFO @FPLLL_VERSION_INFO@
 
+/* fplll default strategy */
+#define FPLLL_DEFAULT_STRATEGY_PATH @FPLLL_DEFAULT_STRATEGY_PATH@
+#define FPLLL_DEFAULT_STRATEGY @FPLLL_DEFAULT_STRATEGY@
+
 /* Maximum supported enumeration dimension */
 #define FPLLL_MAX_ENUM_DIMENSION @FPLLL_MAX_ENUM_DIMENSION@
 

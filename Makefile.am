@@ -8,7 +8,7 @@ CLEANFILES = *.gcov .libs/*.gcda .libs/*.gcno *.gcno *.gcda
 pkgconfigdir       = $(libdir)/pkgconfig
 pkgconfig_DATA     = fplll.pc
 
-strategydir        = $(pkgdatadir)/strategies
+strategydir        = @FPLLL_DEFAULT_STRATEGY_PATH@
 dist_strategy_DATA = strategies/default.json
 
 CLANGFORMAT       ?= clang-format
