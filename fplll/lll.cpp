@@ -25,23 +25,6 @@ FPLLL_BEGIN_NAMESPACE
 static inline bool is_power_of_2(int i) { return (i & (i - 1)) == 0; }
 
 template <class ZT, class FT>
-LLLReduction<ZT, FT>::LLLReduction(MatGSOInterface<ZT, FT> &m, double delta, double eta, int flags)
-    : status(RED_SUCCESS), final_kappa(0), last_early_red(0), n_swaps(0), m(m)
-{
-  /* No early reduction in proved mode (i.e. enable_int_gram=true).
-     NOTE: To make this possible, the hypothesis "g(i, j) is valid if
-     0 <= i < n_known_rows and j <= i" in gso.h should be changed and
-     MatGSOInterface<ZT, FT>::discover_row() should be rewritten. */
-  enable_early_red = (flags & LLL_EARLY_RED) && !m.enable_int_gram;
-  siegel           = flags & LLL_SIEGEL;
-  verbose          = flags & LLL_VERBOSE;
-  this->delta      = delta;
-  this->eta        = eta;
-  swap_threshold   = siegel ? delta - eta * eta : delta;
-  zeros            = 0;
-}
-
-template <class ZT, class FT>
 bool LLLReduction<ZT, FT>::lll(int kappa_min, int kappa_start, int kappa_end,
                                int size_reduction_start)
 {

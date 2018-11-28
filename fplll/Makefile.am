@@ -37,7 +37,8 @@ nobase_include_fplll_HEADERS=defs.h fplll.h \
 	enum/enumerate.h enum/enumerate_base.h enum/enumerate_ext.h \
 	sieve/sieve_gauss.h sieve/sieve_common.h sieve/sieve_gauss_str.h sieve/sampler_basic.h \
 	pruner/pruner.h pruner/pruner_simplex.h \
-	householder.h hlll.h
+	householder.h hlll.h \
+	lll_interface.h
 
 bin_PROGRAMS=fplll latticegen latsieve
 check_PROGRAMS=llldiff
@@ -100,7 +101,8 @@ libfplll_la_SOURCES=fplll.cpp fplll.h \
 	sieve/sieve_gauss_4sieve.cpp \
 	sieve/sampler_basic.h \
 	sieve/sampler_basic.cpp \
-	householder.cpp householder.h hlll.cpp hlll.h
+	householder.cpp householder.h hlll.cpp hlll.h \
+	lll_interface.cpp lll_interface.h
 
 EXTRA_libfplll_la_SOURCES= svpcvp.cpp
 libfplll_la_LIBADD=$(LIBGMP) -lmpfr $(LIBQD_LIBADD)

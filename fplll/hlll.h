@@ -20,11 +20,12 @@
 #define FPLLL_HLLL_H
 
 #include "householder.h"
+#include "lll_interface.h"
 #include <cmath>
 
 FPLLL_BEGIN_NAMESPACE
 
-template <class ZT, class FT> class HLLLReduction
+template <class ZT, class FT> class HLLLReduction : public LLLReductionInterface<ZT, FT>
 {
 public:
   /**
@@ -35,14 +36,11 @@ public:
    */
   HLLLReduction(MatHouseholder<ZT, FT> &arg_m, double delta, double eta, double theta, double c,
                 int flags)
-      : m(arg_m)
+      : LLLReductionInterface<ZT, FT>(delta, eta, flags), m(arg_m)
   {
-    this->delta = delta;
-    this->eta   = eta;
     this->theta = theta;
     this->c     = c;
     sr          = pow(2.0, -(double)m.get_d() * c);
-    verbose     = flags & LLL_VERBOSE;
     dR.resize(m.get_d());
     eR.resize(m.get_d());
     status = -1;
@@ -57,7 +55,9 @@ public:
   inline int get_status() { return status; }
 private:
   // Paramters to (delta, eta, theta) hlll-reduce the basis b in m.
-  FT delta, eta, theta;
+  using LLLReductionInterface<ZT, FT>::delta;
+  using LLLReductionInterface<ZT, FT>::eta;
+  FT theta;
   MatHouseholder<ZT, FT> &m;
 
   // Arbitraty c > 0
@@ -65,7 +65,7 @@ private:
   // Multiplicative coefficient used to check if a vector is size-reduced or not.
   FT sr;
   // Verbose mode.
-  bool verbose;
+  using LLLReductionInterface<ZT, FT>::verbose;
 
   // Temporary variables
   FT ftmp0, ftmp1, ftmp2;
@@ -86,7 +86,7 @@ private:
   /**
    * In verbose mode, print informations to reproduce the computation (parameters, enable features)
    */
-  inline void print_params();
+  virtual inline void print_params();
 
   // Precompute dR[k] * 2^(2*row_expo[k]) = delta_ * R(k, k)^2
   vector<FT> dR;
@@ -95,7 +95,7 @@ private:
   inline void compute_dR(int k);
 
   // Set the status of the computation and print message if verbose
-  inline bool set_status(int new_status);
+  virtual inline bool set_status(int new_status);
 
   // Precompute eR[k] * 2^row_expo[k] = eta * R(k, k)
   vector<FT> eR;

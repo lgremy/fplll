@@ -20,13 +20,14 @@
 
 #include "gso.h"
 #include "gso_interface.h"
+#include "lll_interface.h"
 
 FPLLL_BEGIN_NAMESPACE
 
 /* The precision of FT must be defined before creating an instance of
    LLLReduction. The matrix b can be modified between each call to lll. */
 
-template <class ZT, class FT> class LLLReduction
+template <class ZT, class FT> class LLLReduction : public LLLReductionInterface<ZT, FT>
 {
 public:
   /**
@@ -35,7 +36,21 @@ public:
    * class and must remain the same until the object is destroyed (or no longer
    * needed).
    */
-  LLLReduction(MatGSOInterface<ZT, FT> &m, double delta, double eta, int flags);
+  LLLReduction(MatGSOInterface<ZT, FT> &m, double delta, double eta, int flags)
+      : LLLReductionInterface<ZT, FT>(delta, eta, flags), status(RED_SUCCESS), final_kappa(0),
+        last_early_red(0), n_swaps(0), m(m)
+  {
+    /* No early reduction in proved mode (i.e. enable_int_gram=true).
+NOTE: To make this possible, the hypothesis "g(i, j) is valid if
+0 <= i < n_known_rows and j <= i" in gso.h should be changed and
+MatGSOInterface<ZT, FT>::discover_row() should be rewritten. */
+    enable_early_red = (flags & LLL_EARLY_RED) && !m.enable_int_gram;
+    siegel           = flags & LLL_SIEGEL;
+    this->delta      = delta;
+    this->eta        = eta;
+    swap_threshold   = siegel ? delta - eta * eta : delta;
+    zeros            = 0;
+  }
 
 #ifdef FPLLL_WITH_LONG_DOUBLE
   ~LLLReduction() { LDConvHelper::free(); }
@@ -85,15 +100,17 @@ private:
 
   bool babai(int kappa, int size_reduction_end, int size_reduction_start = 0);
   inline bool early_reduction(int start, int size_reduction_start = 0);
-  inline void print_params();
-  inline bool set_status(int new_status);
+  virtual inline void print_params();
+  virtual inline bool set_status(int new_status);
 
   MatGSOInterface<ZT, FT> &m;
-  FT delta, eta, swap_threshold;
+  using LLLReductionInterface<ZT, FT>::delta;
+  using LLLReductionInterface<ZT, FT>::eta;
+  FT swap_threshold;
 
   bool enable_early_red;
   bool siegel;
-  bool verbose;
+  using LLLReductionInterface<ZT, FT>::verbose;
 
   vector<FT> lovasz_tests;
   vector<FT> babai_mu;
