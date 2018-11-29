@@ -23,7 +23,7 @@
 
 FPLLL_BEGIN_NAMESPACE
 
-template <class ZT, class FT> bool HLLLReduction<ZT, FT>::hlll()
+template <class ZT, class FT> bool HLLLReduction<ZT, FT>::lll()
 {
   /* TODO: we do not use a completely correct value for delta. We must use a value
    * delta_ in (delta + 2^(-p + p0), 1 - 2^(-p + p0)). This implies that, with the

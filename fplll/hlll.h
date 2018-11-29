@@ -43,16 +43,13 @@ public:
     sr          = pow(2.0, -(double)m.get_d() * c);
     dR.resize(m.get_d());
     eR.resize(m.get_d());
-    status = -1;
   }
 
   /**
     @brief Househorder inside LLL reduction.
     */
-  bool hlll();
+  bool lll();
 
-  // Get the status of the computation
-  inline int get_status() { return status; }
 private:
   // Paramters to (delta, eta, theta) hlll-reduce the basis b in m.
   using LLLReductionInterface<ZT, FT>::delta;
@@ -71,7 +68,7 @@ private:
   FT ftmp0, ftmp1, ftmp2;
   long expo0, expo1, expo2;
 
-  int status;
+  using LLLReductionInterface<ZT, FT>::status;
 
   /**
      @brief Size reduction.

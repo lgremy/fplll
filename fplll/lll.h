@@ -37,8 +37,8 @@ public:
    * needed).
    */
   LLLReduction(MatGSOInterface<ZT, FT> &m, double delta, double eta, int flags)
-      : LLLReductionInterface<ZT, FT>(delta, eta, flags), status(RED_SUCCESS), final_kappa(0),
-        last_early_red(0), n_swaps(0), m(m)
+      : LLLReductionInterface<ZT, FT>(delta, eta, flags), final_kappa(0), last_early_red(0),
+        n_swaps(0), m(m)
   {
     /* No early reduction in proved mode (i.e. enable_int_gram=true).
 NOTE: To make this possible, the hypothesis "g(i, j) is valid if
@@ -82,7 +82,6 @@ MatGSOInterface<ZT, FT>::discover_row() should be rewritten. */
 
   inline bool size_reduction(int kappa_min = 0, int kappa_end = -1, int size_reduction_start = 0);
 
-  int status;
   int final_kappa;
   int last_early_red;
   int zeros;
@@ -111,6 +110,8 @@ private:
   bool enable_early_red;
   bool siegel;
   using LLLReductionInterface<ZT, FT>::verbose;
+
+  using LLLReductionInterface<ZT, FT>::status;
 
   vector<FT> lovasz_tests;
   vector<FT> babai_mu;

@@ -108,7 +108,7 @@ bool BKZReduction<ZT, FT>::svp_preprocessing(int kappa, unsigned int block_size,
   int lll_start = (param.flags & BKZ_BOUNDED_LLL) ? kappa : 0;
   if (!lll_obj.lll(lll_start, lll_start, kappa + block_size, 0))
   {
-    throw std::runtime_error(RED_STATUS_STR[lll_obj.status]);
+    throw std::runtime_error(RED_STATUS_STR[lll_obj.get_status()]);
   }
   if (lll_obj.n_swaps > 0)
     clean = false;
@@ -288,7 +288,7 @@ bool BKZReduction<ZT, FT>::svp_reduction(int kappa, int block_size, const BKZPar
   // and even nullpointers!
   if (!lll_obj.size_reduction(0, first + 1, 0))
   {
-    throw std::runtime_error(RED_STATUS_STR[lll_obj.status]);
+    throw std::runtime_error(RED_STATUS_STR[lll_obj.get_status()]);
   }
   FT old_first;
   long old_first_expo;
@@ -345,7 +345,7 @@ bool BKZReduction<ZT, FT>::svp_reduction(int kappa, int block_size, const BKZPar
 
   if (!lll_obj.size_reduction(0, first + 1, 0))
   {
-    throw std::runtime_error(RED_STATUS_STR[lll_obj.status]);
+    throw std::runtime_error(RED_STATUS_STR[lll_obj.get_status()]);
   }
 
   // in order to check if we made progress, we compare the new shortest vector to the
@@ -479,7 +479,7 @@ bool BKZReduction<ZT, FT>::slide_tour(const int loop, const BKZParam &par, int m
     {
       if (!lll_obj.lll(min_row, min_row, max_row, 0))
       {
-        throw std::runtime_error(RED_STATUS_STR[lll_obj.status]);
+        throw std::runtime_error(RED_STATUS_STR[lll_obj.get_status()]);
       }
       if (lll_obj.n_swaps > 0)
       {

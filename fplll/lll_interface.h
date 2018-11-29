@@ -27,12 +27,15 @@ template <class ZT, class FT> class LLLReductionInterface
 {
 public:
   LLLReductionInterface(double arg_delta, double arg_eta, int flags)
-      : delta(arg_delta), eta(arg_eta)
+      : delta(arg_delta), eta(arg_eta), status(RED_SUCCESS)
   {
     verbose = flags & LLL_VERBOSE;
   }
 
   virtual ~LLLReductionInterface();
+
+  // Get the status of the computation
+  inline int get_status() { return status; }
 
 protected:
   // Paramters to (delta, eta) LLL-reduce or (delta, eta, theta) HLLL-reduce
@@ -41,6 +44,8 @@ protected:
 
   // Verbose mode.
   bool verbose;
+
+  int status;
 
   /**
    * In verbose mode, print informations to reproduce the computation (parameters, enable features)

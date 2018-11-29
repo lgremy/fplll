@@ -131,7 +131,7 @@ int Wrapper::call_lll(ZZ_mat<Z> &bz, ZZ_mat<Z> &uz, ZZ_mat<Z> &u_invZ, LLLMethod
   LLLReduction<ZT, FT> lll_obj(m_gso, delta, eta, flags);
   lll_obj.last_early_red = last_early_red;
   lll_obj.lll();
-  status         = lll_obj.status;
+  status         = lll_obj.get_status();
   last_early_red = max(last_early_red, lll_obj.last_early_red);
   if (precision > 0)
   {
@@ -143,9 +143,9 @@ int Wrapper::call_lll(ZZ_mat<Z> &bz, ZZ_mat<Z> &uz, ZZ_mat<Z> &u_invZ, LLLMethod
     cerr << "====== Wrapper: end of " << LLL_METHOD_STR[method] << " method ======\n" << endl;
   }
 
-  if (lll_obj.status == RED_SUCCESS)
+  if (lll_obj.get_status() == RED_SUCCESS)
     return 0;
-  else if (lll_obj.status == RED_GSO_FAILURE || lll_obj.status == RED_BABAI_FAILURE)
+  else if (lll_obj.get_status() == RED_GSO_FAILURE || lll_obj.get_status() == RED_BABAI_FAILURE)
     return lll_obj.final_kappa;
   else
     return -1;
@@ -414,7 +414,7 @@ template <class F> bool Wrapper::call_hlll(LLLMethod method, int precision)
 
   MatHouseholder<Z_NR<mpz_t>, FT> m(b, u, u_inv, householder_flags);
   HLLLReduction<Z_NR<mpz_t>, FT> hlll_obj(m, delta, eta, theta, c, flags);
-  hlll_obj.hlll();
+  hlll_obj.lll();
   int status = hlll_obj.get_status();
 
   if (precision > 0)
@@ -543,7 +543,7 @@ int lll_reduction_zf(ZZ_mat<ZT> &b, ZZ_mat<ZT> &u, ZZ_mat<ZT> &u_inv, double del
   MatGSO<Z_NR<ZT>, FP_NR<FT>> m_gso(b, u, u_inv, gso_flags);
   LLLReduction<Z_NR<ZT>, FP_NR<FT>> lll_obj(m_gso, delta, eta, flags);
   lll_obj.lll();
-  return lll_obj.status;
+  return lll_obj.get_status();
 }
 
 template <class ZT>
@@ -794,7 +794,7 @@ int hlll_reduction_zf(ZZ_mat<ZT> &b, ZZ_mat<ZT> &u, ZZ_mat<ZT> &u_inv, double de
   }
   MatHouseholder<Z_NR<ZT>, FP_NR<FT>> m(b, u, u_inv, householder_flags);
   HLLLReduction<Z_NR<ZT>, FP_NR<FT>> hlll_obj(m, delta, eta, theta, c, flags);
-  hlll_obj.hlll();
+  hlll_obj.lll();
 
   return hlll_obj.get_status();
 }
