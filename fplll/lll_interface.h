@@ -32,7 +32,20 @@ public:
     verbose = flags & LLL_VERBOSE;
   }
 
-  virtual ~LLLReductionInterface();
+  virtual ~LLLReductionInterface() {}
+
+  /**
+     @brief Size reduction.
+
+     Perform size reduction for all vectors between `kappa_start` and `kappa_end`.
+
+     @param kappa_min start index
+     @param kappa_end end index (exclusive)
+     @param size_reduction_start only perform size reductions using vectors starting at this index
+     @return success or failure (due to numerical instability)
+  */
+
+  virtual inline bool size_reduction(int kappa_min, int kappa_end, int size_reduction_start) = 0;
 
   // Get the status of the computation
   inline int get_status() { return status; }
@@ -50,15 +63,17 @@ protected:
   /**
    * In verbose mode, print informations to reproduce the computation (parameters, enable features)
    */
-  virtual void print_params() = 0;
+  virtual inline void print_params() = 0;
 
   // Set the status of the computation and print message if verbose
-  // TODO: this function is quite the same for HLLLReduction and LLLReduction. Can we try to
-  // factorize the code at this level?
-  virtual inline bool set_status(int new_status) = 0;
+  inline bool set_status(int new_status);
 };
 
-template <class ZT, class FT> inline LLLReductionInterface<ZT, FT>::~LLLReductionInterface() {}
+template <class ZT, class FT> inline bool LLLReductionInterface<ZT, FT>::set_status(int new_status)
+{
+  status = new_status;
+  return status == RED_SUCCESS;
+}
 
 FPLLL_END_NAMESPACE
 

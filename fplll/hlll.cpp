@@ -77,10 +77,9 @@ template <class ZT, class FT> bool HLLLReduction<ZT, FT>::lll()
   while (true)
   {
     // Size reduce b[k] thanks to b[0] to b[k - 1]
-    size_reduction(k, k, 0);
-    status_sr = verify_size_reduction(k);  // b[kappa] should be size_reduced. Verify it.
+    status_sr = weak_size_reduction(k, k, 0);
     if (!status_sr)
-      return set_status(RED_HLLL_SR_FAILURE);
+      return false;
 
     if (lovasz_test(k))
     {
@@ -260,12 +259,15 @@ template <class ZT, class FT> bool HLLLReduction<ZT, FT>::lovasz_test(int k)
  * b[kappa].
  */
 template <class ZT, class FT>
-void HLLLReduction<ZT, FT>::size_reduction(int kappa, int size_reduction_end,
-                                           int size_reduction_start)
+bool HLLLReduction<ZT, FT>::weak_size_reduction(int kappa, int size_reduction_end,
+                                                int size_reduction_start)
 {
   FPLLL_DEBUG_CHECK(kappa >= size_reduction_end);
   FPLLL_DEBUG_CHECK(size_reduction_start < size_reduction_end);
   FPLLL_DEBUG_CHECK(0 <= size_reduction_start);
+
+  // True if continue to try to weak_size_reduced b[kappa], false otherwise.
+  bool size_reduce = true;
 
   // If b[kappa] is reduced by at least one b[i], then reduced will be set to true.
   bool reduced = false;
@@ -317,7 +319,7 @@ void HLLLReduction<ZT, FT>::size_reduction(int kappa, int size_reduction_end,
     // If not reduced, b(kappa) has not changed. Computing ||b[kappa]||^2 is not necessary.
     // 1 > 2^(-cd)=sr since cd > 0.
     if (!reduced)
-      return;
+      size_reduce = false;
     else
     {
       // At this point, even if b has changed, the precomputed squared norm of b was for b before
@@ -347,9 +349,15 @@ void HLLLReduction<ZT, FT>::size_reduction(int kappa, int size_reduction_end,
       if (prev_not_stop || not_stop)
         prev_not_stop = not_stop;  // Continue to try to reduce b(kappa).
       else
-        return;
+        size_reduce = false;
     }
-  } while (true);
+  } while (size_reduce);
+
+  // b[kappa] should be size_reduced. Verify it.
+  if (!verify_weak_size_reduction(kappa))
+    return set_status(RED_HLLL_SR_FAILURE);
+
+  return true;
 }
 
 /*
@@ -368,7 +376,7 @@ void HLLLReduction<ZT, FT>::size_reduction(int kappa, int size_reduction_end,
  * HYPOTHESIS: this test was used previously when eta=0.52 and theta = 0.01. Since now
  *   eta=0.51 and theta=0.001, maybe this test will be used.
  */
-template <class ZT, class FT> bool HLLLReduction<ZT, FT>::verify_size_reduction(int kappa)
+template <class ZT, class FT> bool HLLLReduction<ZT, FT>::verify_weak_size_reduction(int kappa)
 {
 #ifdef HOUSEHOLDER_VERIFY_SIZE_REDUCTION_HPLLL
   /*

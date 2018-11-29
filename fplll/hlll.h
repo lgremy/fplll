@@ -50,6 +50,18 @@ public:
     */
   bool lll();
 
+  /**
+     @brief Size reduction.
+
+     Perform size reduction for all vectors between `kappa_start` and `kappa_end`.
+
+     @param kappa_min start index
+     @param kappa_end end index (exclusive)
+     @param size_reduction_start only perform size reductions using vectors starting at this index
+     @return success or failure (due to numerical instability)
+  */
+  inline bool size_reduction(int kappa_min = 0, int kappa_end = -1, int size_reduction_start = 0);
+
 private:
   // Paramters to (delta, eta, theta) hlll-reduce the basis b in m.
   using LLLReductionInterface<ZT, FT>::delta;
@@ -78,12 +90,12 @@ private:
 
      @param kappa index of the vector
   */
-  void size_reduction(int kappa, int size_reduction_end, int size_reduction_start = 0);
+  bool weak_size_reduction(int kappa, int size_reduction_end, int size_reduction_start = 0);
 
   /**
    * In verbose mode, print informations to reproduce the computation (parameters, enable features)
    */
-  virtual inline void print_params();
+  inline void print_params();
 
   // Precompute dR[k] * 2^(2*row_expo[k]) = delta_ * R(k, k)^2
   vector<FT> dR;
@@ -92,7 +104,7 @@ private:
   inline void compute_dR(int k);
 
   // Set the status of the computation and print message if verbose
-  virtual inline bool set_status(int new_status);
+  inline bool set_status(int new_status);
 
   // Precompute eR[k] * 2^row_expo[k] = eta * R(k, k)
   vector<FT> eR;
@@ -101,7 +113,7 @@ private:
   inline void compute_eR(int k);
 
   // Verify if b[k] is is correctry size reduced
-  bool verify_size_reduction(int kappa);
+  bool verify_weak_size_reduction(int kappa);
 
   // Test if delta * R(k - 1, k - 1)^2 <= ||b[k]||^2 - sum_{i = 0}^{i < k - 1}R[k][i]^2 (depending
   // on the way ftmp1 is computed, this test can be slightly different, but the purpose keeps the
@@ -156,15 +168,45 @@ template <class ZT, class FT> inline void HLLLReduction<ZT, FT>::compute_eR(int 
 
 template <class ZT, class FT> inline bool HLLLReduction<ZT, FT>::set_status(int new_status)
 {
-  status = new_status;
   if (verbose)
   {
-    if (status == RED_SUCCESS)
+    if (new_status == RED_SUCCESS)
       cerr << "End of HLLL: success" << endl;
     else
-      cerr << "End of HLLL: failure: " << RED_STATUS_STR[status] << endl;
+      cerr << "End of HLLL: failure: " << RED_STATUS_STR[new_status] << endl;
   }
-  return status == RED_SUCCESS;
+
+  return LLLReductionInterface<ZT, FT>::set_status(new_status);
+}
+
+/* TODO: beware, this function is classically used in the context of BKZ. Since
+ * it is under developpement to integrate HLLL inside BKZ, this function may be
+ * not sufficient to guarantee its expected properties in such a context.
+ *
+ * NOTA: this function was never tested in any context for now. The goal of this
+ * function is to allow to provide something that can be the equivalent of
+ * size_reduction in LLLReduction in ordre to provide a common interface between
+ * HLLLReduction and LLLReduction to integrate HLLL inside BKZ.
+ */
+template <class ZT, class FT>
+inline bool HLLLReduction<ZT, FT>::size_reduction(int kappa_min, int kappa_end,
+                                                  int size_reduction_start)
+{
+  if (kappa_end == -1)
+    kappa_end = m.get_d();
+
+  // Size reduced b[0] is not allowed, then go to b[1]
+  if (kappa_min == 0)
+    kappa_min++;
+
+  for (int k = kappa_min; k < kappa_end; k++)
+  {
+    if (!weak_size_reduction(k, k, size_reduction_start))
+      return false;
+
+    m.update_R_last(k);
+  }
+  return set_status(RED_SUCCESS);
 }
 
 template <class ZT, class FT>

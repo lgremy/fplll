@@ -99,8 +99,8 @@ private:
 
   bool babai(int kappa, int size_reduction_end, int size_reduction_start = 0);
   inline bool early_reduction(int start, int size_reduction_start = 0);
-  virtual inline void print_params();
-  virtual inline bool set_status(int new_status);
+  inline void print_params();
+  inline bool set_status(int new_status);
 
   MatGSOInterface<ZT, FT> &m;
   using LLLReductionInterface<ZT, FT>::delta;
@@ -172,15 +172,14 @@ template <class ZT, class FT> inline void LLLReduction<ZT, FT>::print_params()
 
 template <class ZT, class FT> inline bool LLLReduction<ZT, FT>::set_status(int new_status)
 {
-  status = new_status;
   if (verbose)
   {
-    if (status == RED_SUCCESS)
+    if (new_status == RED_SUCCESS)
       cerr << "End of LLL: success" << endl;
     else
-      cerr << "End of LLL: failure: " << RED_STATUS_STR[status] << endl;
+      cerr << "End of LLL: failure: " << RED_STATUS_STR[new_status] << endl;
   }
-  return status == RED_SUCCESS;
+  return LLLReductionInterface<ZT, FT>::set_status(new_status);
 }
 
 FPLLL_END_NAMESPACE
